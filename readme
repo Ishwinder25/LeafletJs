@@ -1,0 +1,40 @@
+Interactive Map with Search Functionality:
+The main aim of this project is to implements an interactive mapping using Leaflet Js which is an open source platform in JavaScript and it allows users to visualize and search for markers on a map. The map is populated with markers based on data provided in an array named data and is stored in the script file.Each of the marker can be searched using a built-in search bar in the map interface.
+
+Main features of this application:
+1. Interactive Map: It utilizes Leaflet Js to display a dynamic map.
+2. Searchable Markers: Users can Search for markers by their titles using a search bar in a map.
+3. Popups: Clicking on a markers to display a popups with more information.
+4. Creating Markups: You can create a markups of desired shape and at your desired location.
+
+Prerequisties:
+Before you begin, ensure that the following requirements are met:
+1. A modern web browser that supports JavaScript and HTML5.
+2. Access to the internet to load map tiles from OpenStreetMap.
+
+Installation:
+To Set up this project, you need to do the following steps:
+1. Download the Source Code which will be in the form of Zip file.
+2. Open the 'index.html' file and click on open with live server and the file will be opened in a browser and you can then view a map.
+
+Usage:
+The map is initialized and centered based on the first location in your array.Markers are added to the map corresponding to each entry in the data array. Users can use the search bar to find markers by titles.
+
+Example data Format:
+Ensure that your data array is Structured as follows:
+
+Var data= [ {title:"Location A",loc:[50.5,30.5]},
+          {title:"Location B",loc:[50.7,30.7]},
+];
+we can add more locations as needed.
+
+Files Included:
+1. 'index.html': The main HTML file containing the setup of the map.
+2. 'scripts.js': Contains the JavaScript code for initializing the map and its functionalities.
+3. 'styles.css':I have added custom styles for your map.
+
+Libraries Used:
+Leaflet.JS is an open-source JavaScript library for mobile-friendly intreactive maps.
+
+Contact: 
+If you have any questions, please reach out to me at: ishwinder.malhotra@gmail.com

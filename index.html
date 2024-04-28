@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Web Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css"/>
+    <style>
+        #map {
+            height: 700px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>   
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+<script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script>
+	var data = [
+		{"loc":[41.575330,13.102411], "title":"aquamarine"},
+		
+	];
+
+ 
+
+    var map = new L.Map('map', {zoom: 15, center: new L.latLng(data[0].loc) });	//set center from first location
+
+	map.addLayer(new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
+
+	var markersLayer = new L.LayerGroup();	//layer contain searched elements
+	
+	map.addLayer(markersLayer);
+
+	var controlSearch = new L.Control.Search({
+		position:'topright',		
+		layer: markersLayer,
+		initial: false,
+		zoom: 12,
+		marker: false
+	});
+
+	map.addControl( controlSearch );
+
+	////////////populate map with markers from sample data
+	for(i in data) {
+		var title = data[i].title,	//value searched
+			loc = data[i].loc,		//position found
+			marker = new L.Marker(new L.latLng(loc), {title: title} );//se property searched
+		marker.bindPopup('title: '+ title );
+		markersLayer.addLayer(marker);
+	}
+
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polygon: false,
+            polyline: true,
+            marker: true,
+            circle: true,
+            rectangle: false
+        },
+        edit: {
+            featureGroup: drawnItems,
+            remove: true
+        }
+    });
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+        var textContent = prompt("Enter text for this feature:");
+        if (textContent !== null) {
+            var popupContent = '<textarea rows="5" cols="20" readonly>' + textContent + '</textarea>';
+            var popup = L.popup({ closeButton: true }).setContent(popupContent);
+            layer.bindPopup(popup).openPopup();
+            drawnItems.addLayer(layer);
+            layer.text = textContent;  // Ensure this is the text property used by the search
+
+            if (layer instanceof L.Marker) {
+                // It's a marker
+                var latLng = layer.getLatLng();
+                featureData = {
+                    loc: [latLng.lat, latLng.lng],
+                    title: textContent
+                };
+            } else if (layer instanceof L.Circle) {
+                // It's a circle
+                var latLng = layer.getLatLng();
+                featureData = {
+                    loc: [latLng.lat, latLng.lng],
+                    radius: layer.getRadius(),
+                    title: textContent
+                };
+            } else if (layer instanceof L.Polygon) {
+                // It's a polygon
+                var latLngs = layer.getLatLngs()[0].map(ll => [ll.lat, ll.lng]);
+                featureData = {
+                    loc: latLngs,
+                    title: textContent
+                };
+            } else if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                // It's a polyline
+                var latLngs = layer.getLatLngs().map(ll => [ll.lat, ll.lng]);
+                featureData = {
+                    loc: latLngs,
+                    title: textContent
+                };
+            } else if (layer instanceof L.Rectangle) {
+                // It's a rectangle
+                var bounds = layer.getBounds();
+                var southWest = bounds.getSouthWest();
+                var northEast = bounds.getNorthEast();
+                featureData = {
+                    loc: [[southWest.lat, southWest.lng], [northEast.lat, northEast.lng]],
+                    title: textContent
+                };
+            }
+
+    
+            // Add feature data to the global array
+            data.push(featureData);
+            for(i in data) {
+                var title = data[i].title,	//value searched
+                    loc = data[i].loc,		//position found
+                    marker = new L.Marker(new L.latLng(loc), {title: title} );//se property searched
+                marker.bindPopup('title: '+ title );
+                markersLayer.addLayer(marker);
+            }
+            console.log(data);
+              
+            
+            
+	
+               
+        }
+    });
+
+</script>
+</body>
+</html>
